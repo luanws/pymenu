@@ -1,0 +1,5 @@
+# Pymenu
+
+```
+pip install pymenu
+```
