@@ -29,7 +29,7 @@ menu = Menu('Scripts')
 menu.add_options([
     ('build', lambda: os.system('python setup.py sdist bdist_wheel')),
     ('publish', lambda: os.system('twine upload dist/*')),
-    ('clear build', lambda: clear_build),
+    ('clear build', clear_build),
     ('show packages', show_packages),
     ('deploy', deploy),
 ])
