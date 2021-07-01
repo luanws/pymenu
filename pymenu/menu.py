@@ -2,13 +2,19 @@ import os
 from typing import Callable, List, Tuple
 
 import keyboard
+from termcolor import colored
 
 from pymenu.option import Option
 
 
 class Menu:
-    def __init__(self, title: str, options: List[Option] = []) -> None:
+    def __init__(
+        self, title: str, options: List[Option] = [],
+        title_color: str = 'blue', selected_color: str = 'cyan'
+    ) -> None:
         self.title = title
+        self.title_color = title_color
+        self.selected_color = selected_color
         self.options = options
         self.__selected_index: int = 0
 
@@ -32,13 +38,10 @@ class Menu:
 
     def __update(self):
         self.clear()
+        print(colored(self.title, self.title_color), '\n')
         for i, script in enumerate(self.options):
             if i == self.__selected_index:
-                try:
-                    print('\033[96m', end='')
-                    print(i + 1, '-', script)
-                finally:
-                    print('\033[0;0m', end='')
+                print(colored(f'{i+1} - {script}', self.selected_color))
             else:
                 print(i + 1, '-', script)
 
