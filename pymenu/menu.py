@@ -24,8 +24,8 @@ class Menu:
         self.__update()
         keyboard.add_hotkey('up', self.up)
         keyboard.add_hotkey('down', self.down)
-        keyboard.add_hotkey('enter', self.enter)
-        keyboard.wait()
+        self.wait_for_command()
+        self.run_selected()
 
     def clear(self):
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -52,7 +52,13 @@ class Menu:
             self.__selected_index += 1
             self.__update()
 
-    def enter(self):
+    def wait_for_command(self):
+        command = input()
+        if command.isnumeric():
+            option_number = int(command)
+            self.__selected_index = option_number - 1
+
+    def run_selected(self):
         self.clear()
         option = self.options[self.__selected_index]
         option()
