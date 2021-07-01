@@ -1,10 +1,10 @@
-import sys
 import os
 import shutil
-import setuptools
 from contextlib import suppress
 
-args = sys.argv[1:]
+import setuptools
+
+from pymenu import Menu
 
 
 def clear_build():
@@ -18,38 +18,19 @@ def show_packages():
     print(setuptools.find_packages())
 
 
-scripts = {
-    'build': 'python setup.py sdist bdist_wheel',
-    'publish': 'twine upload dist/*',
-    'clear_build': clear_build,
-    'deploy': [
-        clear_build,
-        'python setup.py sdist bdist_wheel',
-        'twine upload dist/*',
-        clear_build,
-    ],
-    'show_packages': show_packages,
-}
-
-commands = []
-for arg in args:
-    if scripts.keys().__contains__(arg):
-        commands.append(scripts[arg])
+def deploy():
+    clear_build()
+    os.system('python setup.py sdist bdist_wheel')
+    os.system('twine upload dist/*')
+    clear_build()
 
 
-def run_command(command):
-    if isinstance(command, str):
-        os.system(command)
-    elif callable(command):
-        command()
-
-
-for command in commands:
-    if isinstance(command, list):
-        [run_command(c) for c in command]
-    else:
-        run_command(command)
-
-
-if (len(args) == 0):
-    print(list(scripts.keys()))
+menu = Menu('Scripts')
+menu.add_options([
+    ('build', lambda: os.system('python setup.py sdist bdist_wheel')),
+    ('publish', lambda: os.system('twine upload dist/*')),
+    ('clear build', lambda: clear_build),
+    ('show packages', show_packages),
+    ('deploy', deploy),
+])
+menu.show()

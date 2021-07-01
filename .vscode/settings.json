@@ -6,5 +6,8 @@
         "**/CVS": true,
         "**/__pycache__": true,
         "**/.mypy_cache": true
-    }
+    },
+    "cSpell.words": [
+        "pymenu"
+    ],
 }
