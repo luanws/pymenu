@@ -1,5 +1,5 @@
 # Pymenu
 
 ```
-pip install pymenu
+pip install pymenu-console
 ```
