@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pymenu-console",
-    version="0.0.3",
+    version="0.0.4",
     author="luanws",
     author_email="luan.w.silveira@gmail.com",
     description="Python console menu",
@@ -17,6 +17,9 @@ setuptools.setup(
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
+    ],
+    install_requires=[
+        'termcolor'
     ],
     python_requires='>=3.7',
 )
