@@ -33,6 +33,10 @@ class Menu:
         self.wait_for_command()
         self.run_selected()
 
+    def remove_keyboard_listener(self):
+        keyboard.remove_hotkey('up')
+        keyboard.remove_hotkey('down')
+
     def clear(self):
         os.system('cls' if os.name == 'nt' else 'clear')
 
@@ -57,6 +61,7 @@ class Menu:
 
     def wait_for_command(self):
         command = input()
+        self.remove_keyboard_listener()
         if command.isnumeric():
             option_number = int(command)
             self.__selected_index = option_number - 1
