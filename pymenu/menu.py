@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import os
-from typing import Callable, List, Tuple
+from typing import Callable, List, Tuple, Union
 
 import keyboard
 from termcolor import colored
@@ -9,20 +11,41 @@ from pymenu.option import Option
 
 class Menu:
     def __init__(
-        self, title: str, options: List[Option] = [],
-        title_color: str = 'blue', selected_color: str = 'cyan'
+        self,
+        title: str,
+        options: List[Option] = None,
+        title_color: str = 'blue',
+        selected_color: str = 'cyan',
+        back_name: str = '<-',
+        prefix: str = '%s) ',
     ) -> None:
         self.title = title
         self.title_color = title_color
         self.selected_color = selected_color
-        self.options = options
+        self.options = options or []
         self.__selected_index: int = 0
+        self.back_name = back_name
+        self.prefix = prefix
 
-    def add_option(self, option: Tuple[str, Callable]):
+    def open_submenu(self, submenu: Menu):
+        self.clear()
+        if submenu.options[-1].name != self.back_name:
+            submenu.add_option((self.back_name, lambda: self.return_to_this_menu(submenu)))
+        submenu.show()
+
+    def return_to_this_menu(self, submenu: Menu):
+        submenu.clear()
+        self.show()
+
+    def add_option(self, option: Tuple[str, Union[Callable, Menu]]):
         name, call = option
-        self.options.append(Option(name, call))
+        if isinstance(call, Menu):
+            submenu: Menu = call
+            self.options.append(Option(name, lambda: self.open_submenu(submenu)))
+        else:
+            self.options.append(Option(name, call))
 
-    def add_options(self, options: List[Tuple[str, Callable]]):
+    def add_options(self, options: List[Tuple[str, Union[Callable, Menu]]]):
         for option in options:
             self.add_option(option)
 
@@ -44,10 +67,11 @@ class Menu:
         self.clear()
         print(colored(self.title, self.title_color), '\n')
         for i, script in enumerate(self.options):
+            prefix = self.prefix % (i + 1)
             if i == self.__selected_index:
-                print(colored(f'{i+1} - {script}', self.selected_color))
+                print(colored(f'{prefix}{script}', self.selected_color))
             else:
-                print(i + 1, '-', script)
+                print(f'{prefix}{script}')
 
     def up(self):
         if self.__selected_index > 0:
@@ -66,7 +90,10 @@ class Menu:
             option_number = int(command)
             self.__selected_index = option_number - 1
 
+    @property
+    def selected_option(self):
+        return self.options[self.__selected_index]
+
     def run_selected(self):
         self.clear()
-        option = self.options[self.__selected_index]
-        option()
+        self.selected_option()
