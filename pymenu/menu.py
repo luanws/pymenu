@@ -31,15 +31,14 @@ class Menu:
     def open_submenu(self, submenu: Menu):
         self.clear()
         if submenu.options[-1].name != self.back_name:
-            submenu.add_option((self.back_name, lambda: self.return_to_this_menu(submenu)))
+            submenu.add_option(self.back_name, lambda: self.return_to_this_menu(submenu))
         submenu.show()
 
     def return_to_this_menu(self, submenu: Menu):
         submenu.clear()
         self.show()
 
-    def add_option(self, option: Tuple[str, Union[Callable, Menu]]):
-        name, call = option
+    def add_option(self, name: str, call: Union[Callable, Menu]):
         if isinstance(call, Menu):
             submenu: Menu = call
             self.options.append(Option(name, lambda: self.open_submenu(submenu)))
@@ -48,7 +47,7 @@ class Menu:
 
     def add_options(self, options: List[Tuple[str, Union[Callable, Menu]]]):
         for option in options:
-            self.add_option(option)
+            self.add_option(*option)
 
     def show(self):
         self.__update()
