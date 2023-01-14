@@ -7,6 +7,7 @@ import keyboard
 from termcolor import colored
 
 from pymenu.option import Option
+from pymenu.utils import inputs
 
 
 class Menu:
@@ -84,7 +85,7 @@ class Menu:
             self.__update()
 
     def wait_for_command(self):
-        command = input()
+        command = inputs.get_numeric_input()
         self.remove_keyboard_listener()
         if command.isnumeric():
             option_number = int(command)
