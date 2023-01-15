@@ -36,8 +36,14 @@ def create_menu_from_directory(path: str, prefix: str = None) -> Menu:
     title = get_directory_name(path)
     title = prefix + title if prefix else title
     menu = Menu(title)
+
+    def file_callback(path: str, file: str):
+        return lambda: run_python_file(os.path.join(path, file))
+
     for file in get_all_files_from_directory(path):
-        menu.add_option(file, lambda: run_python_file(os.path.join(path, file)))
+        menu.add_option(file, file_callback(path, file))
+
     for folder in get_all_folders_from_directory(path):
         menu.add_option(folder, create_menu_from_directory(os.path.join(path, folder), f'{title} > '))
+
     return menu
