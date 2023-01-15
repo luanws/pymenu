@@ -1,3 +1,4 @@
+import re
 import os
 from typing import List
 
@@ -28,8 +29,14 @@ def get_directory_name(path: str) -> str:
     return os.path.basename(os.path.normpath(path))
 
 
-def run_python_file(path: str):
-    os.system(f'python {path}')
+def python_filename_to_module_name(filename: str) -> str:
+    module_name = filename.replace(os.getcwd(), '').replace('\\', '.').replace('.py', '')
+    module_name = re.sub(r'^\.', '', module_name)
+    return module_name
+
+
+def run_python_module(module_name: str):
+    os.system(f'python -m {module_name}')
 
 
 def create_menu_from_directory(path: str, prefix: str = None) -> Menu:
@@ -38,7 +45,8 @@ def create_menu_from_directory(path: str, prefix: str = None) -> Menu:
     menu = Menu(title)
 
     def file_callback(path: str, file: str):
-        return lambda: run_python_file(os.path.join(path, file))
+        python_module = python_filename_to_module_name(os.path.join(path, file))
+        return lambda: run_python_module(python_module)
 
     for file in get_all_files_from_directory(path):
         menu.add_option(file, file_callback(path, file))
