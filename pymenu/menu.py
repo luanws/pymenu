@@ -19,6 +19,7 @@ class Menu:
         selected_color: str = 'cyan',
         back_name: str = '<-',
         prefix: str = '%s) ',
+        enable_keyboard_selection: bool = True,
     ) -> None:
         self.title = title
         self.title_color = title_color
@@ -27,6 +28,7 @@ class Menu:
         self.__selected_index: int = 0
         self.back_name = back_name
         self.prefix = prefix
+        self.enable_keyboard_selection = enable_keyboard_selection
 
     def open_submenu(self, submenu: Menu):
         self.clear()
@@ -51,14 +53,16 @@ class Menu:
 
     def show(self):
         self.__update()
-        keyboard.add_hotkey('up', self.up)
-        keyboard.add_hotkey('down', self.down)
+        if self.enable_keyboard_selection:
+            keyboard.add_hotkey('up', self.up)
+            keyboard.add_hotkey('down', self.down)
         self.wait_for_command()
         self.run_selected()
 
     def remove_keyboard_listener(self):
-        keyboard.remove_hotkey('up')
-        keyboard.remove_hotkey('down')
+        if self.enable_keyboard_selection:
+            keyboard.remove_hotkey('up')
+            keyboard.remove_hotkey('down')
 
     def clear(self):
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -68,7 +72,7 @@ class Menu:
         print(colored(self.title, self.title_color), '\n')
         for i, script in enumerate(self.options):
             prefix = self.prefix % (i + 1)
-            if i == self.__selected_index:
+            if self.enable_keyboard_selection and i == self.__selected_index:
                 print(colored(f'{prefix}{script}', self.selected_color))
             else:
                 print(f'{prefix}{script}')

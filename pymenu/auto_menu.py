@@ -39,10 +39,10 @@ def run_python_module(module_name: str):
     os.system(f'python -m {module_name}')
 
 
-def create_menu_from_directory(path: str, prefix: str = None) -> Menu:
+def create_menu_from_directory(path: str, prefix: str = None, *args, **kwargs) -> Menu:
     title = get_directory_name(path)
     title = prefix + title if prefix else title
-    menu = Menu(title)
+    menu = Menu(title, *args, **kwargs)
 
     def file_callback(path: str, file: str):
         python_module = python_filename_to_module_name(os.path.join(path, file))
@@ -52,6 +52,6 @@ def create_menu_from_directory(path: str, prefix: str = None) -> Menu:
         menu.add_option(file, file_callback(path, file))
 
     for folder in get_all_folders_from_directory(path):
-        menu.add_option(folder, create_menu_from_directory(os.path.join(path, folder), f'{title} > '))
+        menu.add_option(folder, create_menu_from_directory(os.path.join(path, folder), f'{title} > ', *args, **kwargs))
 
     return menu
