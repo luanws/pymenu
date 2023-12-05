@@ -43,7 +43,8 @@ class Menu:
     def add_option(self, name: str, call: Union[Callable, Menu]):
         if isinstance(call, Menu):
             submenu: Menu = call
-            self.options.append(Option(name, lambda: self.open_submenu(submenu)))
+            if len(submenu.options) > 0:
+                self.options.append(Option(name, lambda: self.open_submenu(submenu)))
         else:
             self.options.append(Option(name, call))
 
