@@ -30,7 +30,7 @@ def get_directory_name(path: str) -> str:
 
 
 def python_filename_to_module_name(filename: str) -> str:
-    module_name = filename.replace(os.getcwd(), '').replace('\\', '.').replace('.py', '')
+    module_name = filename.replace(os.getcwd(), '').replace('/', '.').replace('\\', '.').replace('.py', '')
     module_name = re.sub(r'^\.', '', module_name)
     return module_name
 
