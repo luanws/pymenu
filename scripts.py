@@ -2,6 +2,7 @@ import os
 import shutil
 from contextlib import suppress
 
+import dotenv
 import setuptools
 
 from pymenu import Menu
@@ -20,8 +21,9 @@ def show_packages():
 
 def deploy():
     clear_build()
+    token = dotenv.get_key('.env', 'PYPI_TOKEN')
     os.system('python setup.py sdist bdist_wheel')
-    os.system('twine upload dist/*')
+    os.system(f'twine upload -u __token__ -p {token} dist/*')
     clear_build()
 
 

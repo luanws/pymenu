@@ -3,14 +3,15 @@ from __future__ import annotations
 import os
 from typing import Callable, List, Tuple, Union
 
-import keyboard
 from termcolor import colored
 
 from pymenu.option import Option
-from pymenu.utils import inputs
+from pymenu.utils.keyboard import input_key
 
 
 class Menu:
+    text: str
+
     def __init__(
         self,
         title: str,
@@ -29,6 +30,7 @@ class Menu:
         self.back_name = back_name
         self.prefix = prefix
         self.enable_keyboard_selection = enable_keyboard_selection
+        self.text = ''
 
     def open_submenu(self, submenu: Menu):
         self.clear()
@@ -54,16 +56,6 @@ class Menu:
 
     def show(self):
         self.__update()
-        if self.enable_keyboard_selection:
-            keyboard.add_hotkey('up', self.up)
-            keyboard.add_hotkey('down', self.down)
-        self.wait_for_command()
-        self.run_selected()
-
-    def remove_keyboard_listener(self):
-        if self.enable_keyboard_selection:
-            keyboard.remove_hotkey('up')
-            keyboard.remove_hotkey('down')
 
     def clear(self):
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -77,23 +69,39 @@ class Menu:
                 print(colored(f'{prefix}{script}', self.selected_color))
             else:
                 print(f'{prefix}{script}')
+        
+        if self.text:
+            print(f'\n{self.text}')
+        self.wait_for_command()
 
     def up(self):
         if self.__selected_index > 0:
             self.__selected_index -= 1
-            self.__update()
 
     def down(self):
         if self.__selected_index < len(self.options) - 1:
             self.__selected_index += 1
-            self.__update()
+
+    def text_input(self, number: str):
+        self.text += number
+
+    def backspace(self):
+        if self.text:
+            self.text = self.text[:-1]
 
     def wait_for_command(self):
-        command = inputs.get_numeric_input()
-        self.remove_keyboard_listener()
-        if command.isnumeric():
-            option_number = int(command)
-            self.__selected_index = option_number - 1
+        key = input_key()
+        if key == 'ENTER':
+            return self.run_selected()
+        elif key == 'UP':
+            self.up()
+        elif key == 'DOWN':
+            self.down()
+        elif key == 'BACKSPACE':
+            self.backspace()
+        elif key.isnumeric():
+            self.text_input(key)
+        self.__update()
 
     @property
     def selected_option(self):
@@ -101,4 +109,7 @@ class Menu:
 
     def run_selected(self):
         self.clear()
+        if self.text and self.text.isnumeric():
+            number = int(self.text)
+            self.__selected_index = number - 1
         self.selected_option()
